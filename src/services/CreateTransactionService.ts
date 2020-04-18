@@ -1,9 +1,8 @@
 import { getCustomRepository, getRepository } from 'typeorm';
 
-// import AppError from '../errors/AppError';
-
 import Transaction from '../models/Transaction';
 import CategoriesRepository from '../repositories/CategoriesRepository';
+import TransactionsRepository from '../repositories/TransactionsRepository';
 import AppError from '../errors/AppError';
 
 interface Request {
@@ -30,7 +29,13 @@ class CreateTransactionService {
       throw new AppError('invalid type entry', 400);
     }
 
-    const transactionsRepository = getRepository(Transaction);
+    const transactionsRepository = getCustomRepository(TransactionsRepository);
+
+    const balance = await transactionsRepository.getBalance();
+
+    if(type === "outcome" && value > balance.total){
+      throw new AppError('dont have saldo, please make a income value', 400);
+    }
     const transaction = transactionsRepository.create({
       title, value, type, category_id
     })
