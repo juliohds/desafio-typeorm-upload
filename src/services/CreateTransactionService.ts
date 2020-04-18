@@ -17,13 +17,13 @@ class CreateTransactionService {
     // TODO
     const categoriesRepository = getCustomRepository(CategoriesRepository);
     let categoryByName = await categoriesRepository.getCategoryByName(category);
-    let category_id = "";
+    let category_id = {};
     if(categoryByName){
-      category_id = categoryByName.id;
+      category_id = categoryByName;
     } else {
       const newCategory = categoriesRepository.create({ title: category });
       await categoriesRepository.save(newCategory);
-      category_id = newCategory.id;
+      category_id = newCategory;
     }
 
     if(type !== "income" && type !== "outcome"){
