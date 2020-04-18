@@ -14,8 +14,18 @@ export class CreateTransactions1587221345800 implements MigrationInterface {
             default: 'uuid_generate_v4()',
           },
           {
+            name: 'type',
+            type: 'varchar',
+            isNullable: false,
+          },
+          {
             name: 'title',
             type: 'varchar',
+            isNullable: false,
+          },
+          {
+            name: 'value',
+            type: 'int',
             isNullable: false,
           },
           {
