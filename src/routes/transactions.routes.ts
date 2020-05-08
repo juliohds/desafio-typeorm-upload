@@ -13,30 +13,41 @@ const upload = multer(uploadConfig);
 
 transactionsRouter.get('/', async (request, response) => {
   const transactionsRepository = getCustomRepository(TransactionsRepository);
-  const transactions = await transactionsRepository.find({ relations: ["category_id"] });
+  const transactions = await transactionsRepository.find({
+    relations: ['category'],
+  });
   const balance = await transactionsRepository.getBalance();
-  return response.json({transactions, balance});
+  return response.json({ transactions, balance });
 });
 
 transactionsRouter.post('/', async (request, response) => {
   const { title, value, type, category } = request.body;
   const createTransaction = new CreateTransactionService();
-  const transaction = await createTransaction.execute({title, value, type, category});
-  return response.json(transaction)
+  const transaction = await createTransaction.execute({
+    title,
+    value,
+    type,
+    category,
+  });
+  return response.json(transaction);
 });
 
 transactionsRouter.delete('/:id', async (request, response) => {
   const { id } = request.params;
   const deleteTransaction = new DeleteTransactionService();
   await deleteTransaction.execute(id);
-  return response.status(204).json({ok: true});
+  return response.status(204).json({ ok: true });
 });
 
-transactionsRouter.post('/import', upload.single('avatar'), async (request, response) => {
-  const { filename } = request.file;
-  const importTransaction = new ImportTransactionsService();
-  const transactions = await importTransaction.execute(filename);
-  return response.status(200).json(transactions);
-});
+transactionsRouter.post(
+  '/import',
+  upload.single('avatar'),
+  async (request, response) => {
+    const { filename } = request.file;
+    const importTransaction = new ImportTransactionsService();
+    const transactions = await importTransaction.execute(filename);
+    return response.status(200).json(transactions);
+  },
+);
 
 export default transactionsRouter;

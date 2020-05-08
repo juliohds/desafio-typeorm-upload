@@ -9,15 +9,20 @@ interface Request {
   title: string;
   value: number;
   type: string;
-  category : string;
+  category: string;
 }
 class CreateTransactionService {
-  public async execute({ title, value, type, category}: Request): Promise<Transaction> {
+  public async execute({
+    title,
+    value,
+    type,
+    category,
+  }: Request): Promise<Transaction> {
     // TODO
     const categoriesRepository = getCustomRepository(CategoriesRepository);
     let categoryByName = await categoriesRepository.getCategoryByName(category);
     let category_id = {};
-    if(categoryByName){
+    if (categoryByName) {
       category_id = categoryByName;
     } else {
       const newCategory = categoriesRepository.create({ title: category });
@@ -25,7 +30,7 @@ class CreateTransactionService {
       category_id = newCategory;
     }
 
-    if(type !== "income" && type !== "outcome"){
+    if (type !== 'income' && type !== 'outcome') {
       throw new AppError('invalid type entry', 400);
     }
 
@@ -33,12 +38,15 @@ class CreateTransactionService {
 
     const balance = await transactionsRepository.getBalance();
 
-    if(type === "outcome" && value > balance.total){
+    if (type === 'outcome' && value > balance.total) {
       throw new AppError('dont have saldo, please make a income value', 400);
     }
     const transaction = transactionsRepository.create({
-      title, value, type, category_id
-    })
+      title,
+      value,
+      type,
+      category: category_id,
+    });
 
     await transactionsRepository.save(transaction);
     return transaction;
